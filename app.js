@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Clock, TrendingUp, Trash2 } from 'lucide-react';
+const { useState, useEffect } = React;
 
-export default function SkillTracker() {
+function SkillTracker() {
   const [skills, setSkills] = useState([]);
   const [newSkillName, setNewSkillName] = useState('');
   const [loading, setLoading] = useState(true);
@@ -79,6 +78,35 @@ export default function SkillTracker() {
     return 20 - (hours % 20);
   };
 
+  // Icons as SVG components
+  const PlusIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+  );
+
+  const ClockIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10"></circle>
+      <polyline points="12 6 12 12 16 14"></polyline>
+    </svg>
+  );
+
+  const TrendingUpIcon = () => (
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+      <polyline points="17 6 23 6 23 12"></polyline>
+    </svg>
+  );
+
+  const TrashIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <polyline points="3 6 5 6 21 6"></polyline>
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    </svg>
+  );
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center">
@@ -92,7 +120,7 @@ export default function SkillTracker() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold text-white mb-2 flex items-center justify-center gap-3">
-            <TrendingUp size={48} />
+            <TrendingUpIcon />
             Skill Mastery Tracker
           </h1>
           <p className="text-purple-200">Level up your skills, 20 hours at a time</p>
@@ -113,7 +141,7 @@ export default function SkillTracker() {
               onClick={addSkill}
               className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all flex items-center gap-2 shadow-lg"
             >
-              <Plus size={20} />
+              <PlusIcon />
               Add Skill
             </button>
           </div>
@@ -132,7 +160,7 @@ export default function SkillTracker() {
                     <h3 className="text-2xl font-bold text-white mb-1">{skill.name}</h3>
                     <div className="flex items-center gap-4 text-purple-200">
                       <span className="flex items-center gap-1">
-                        <Clock size={16} />
+                        <ClockIcon />
                         {skill.totalHours.toFixed(1)} hours
                       </span>
                       <span className="text-yellow-300 font-semibold">Level {skill.level}</span>
@@ -142,7 +170,7 @@ export default function SkillTracker() {
                     onClick={() => deleteSkill(skill.id)}
                     className="p-2 hover:bg-red-500/30 rounded-lg transition-all"
                   >
-                    <Trash2 size={20} className="text-red-300" />
+                    <TrashIcon />
                   </button>
                 </div>
 
@@ -185,3 +213,5 @@ export default function SkillTracker() {
     </div>
   );
 }
+
+ReactDOM.render(<SkillTracker />, document.getElementById('root'));
