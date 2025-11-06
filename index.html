@@ -7,9 +7,6 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { margin: 0; padding: 0; }
-    </style>
 </head>
 <body>
     <div id="root"></div>
@@ -108,7 +105,7 @@
           },
             React.createElement('div', { className: 'max-w-4xl mx-auto' },
               React.createElement('div', { className: 'text-center mb-8' },
-                React.createElement('h1', { className: 'text-5xl font-bold text-white mb-2' }, 'Skill Mastery Tracker'),
+                React.createElement('h1', { className: 'text-5xl font-bold text-white mb-2' }, '🎯 Skill Mastery Tracker'),
                 React.createElement('p', { className: 'text-purple-200' }, 'Level up your skills, 20 hours at a time')
               ),
               React.createElement('div', { className: 'bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-8 shadow-2xl border border-white/20' },
@@ -125,7 +122,7 @@
                   React.createElement('button', {
                     onClick: addSkill,
                     className: 'px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all shadow-lg'
-                  }, 'Add Skill')
+                  }, '➕ Add Skill')
                 )
               ),
               React.createElement('div', { className: 'space-y-4' },
@@ -142,13 +139,13 @@
                           React.createElement('div', { className: 'flex-1' },
                             React.createElement('h3', { className: 'text-2xl font-bold text-white mb-1' }, skill.name),
                             React.createElement('div', { className: 'flex items-center gap-4 text-purple-200' },
-                              React.createElement('span', {}, skill.totalHours.toFixed(1) + ' hours'),
-                              React.createElement('span', { className: 'text-yellow-300 font-semibold' }, 'Level ' + skill.level)
+                              React.createElement('span', {}, '⏱️ ' + skill.totalHours.toFixed(1) + ' hours'),
+                              React.createElement('span', { className: 'text-yellow-300 font-semibold' }, '⭐ Level ' + skill.level)
                             )
                           ),
                           React.createElement('button', {
                             onClick: () => deleteSkill(skill.id),
-                            className: 'p-2 hover:bg-red-500/30 rounded-lg transition-all text-red-300'
+                            className: 'p-2 hover:bg-red-500/30 rounded-lg transition-all text-red-300 text-xl'
                           }, '🗑️')
                         ),
                         React.createElement('div', { className: 'mb-4' },
@@ -177,7 +174,7 @@
                           React.createElement('button', {
                             onClick: () => updateSkillTime(skill.id),
                             className: 'px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-lg'
-                          }, 'Update')
+                          }, '✅ Update')
                         )
                       )
                     )
