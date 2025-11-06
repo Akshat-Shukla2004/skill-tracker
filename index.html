@@ -6,11 +6,187 @@
     <title>Skill Mastery Tracker</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+    </style>
 </head>
 <body>
     <div id="root"></div>
-    <script type="text/babel" src="app.js"></script>
+    
+    <script>
+        const { useState, useEffect } = React;
+
+        function SkillTracker() {
+          const [skills, setSkills] = useState([]);
+          const [newSkillName, setNewSkillName] = useState('');
+          const [loading, setLoading] = useState(true);
+          const [updateTime, setUpdateTime] = useState({});
+
+          useEffect(() => {
+            loadSkills();
+          }, []);
+
+          const loadSkills = () => {
+            try {
+              const savedSkills = localStorage.getItem('skills-data');
+              if (savedSkills) {
+                setSkills(JSON.parse(savedSkills));
+              }
+            } catch (error) {
+              console.log('No existing skills found');
+            } finally {
+              setLoading(false);
+            }
+          };
+
+          const saveSkills = (updatedSkills) => {
+            try {
+              localStorage.setItem('skills-data', JSON.stringify(updatedSkills));
+            } catch (error) {
+              console.error('Failed to save skills:', error);
+            }
+          };
+
+          const addSkill = () => {
+            if (newSkillName.trim()) {
+              const newSkill = {
+                id: Date.now(),
+                name: newSkillName.trim(),
+                totalHours: 0,
+                level: 1
+              };
+              const updatedSkills = [...skills, newSkill];
+              setSkills(updatedSkills);
+              saveSkills(updatedSkills);
+              setNewSkillName('');
+            }
+          };
+
+          const updateSkillTime = (skillId) => {
+            const hoursToAdd = parseFloat(updateTime[skillId] || 0);
+            if (hoursToAdd > 0) {
+              const updatedSkills = skills.map(skill => {
+                if (skill.id === skillId) {
+                  const newTotalHours = skill.totalHours + hoursToAdd;
+                  const newLevel = Math.floor(newTotalHours / 20) + 1;
+                  return { ...skill, totalHours: newTotalHours, level: newLevel };
+                }
+                return skill;
+              });
+              setSkills(updatedSkills);
+              saveSkills(updatedSkills);
+              setUpdateTime({ ...updateTime, [skillId]: '' });
+            }
+          };
+
+          const deleteSkill = (skillId) => {
+            const updatedSkills = skills.filter(skill => skill.id !== skillId);
+            setSkills(updatedSkills);
+            saveSkills(updatedSkills);
+          };
+
+          const getProgressPercentage = (hours) => {
+            const hoursInCurrentLevel = hours % 20;
+            return (hoursInCurrentLevel / 20) * 100;
+          };
+
+          const getHoursToNextLevel = (hours) => {
+            return 20 - (hours % 20);
+          };
+
+          if (loading) {
+            return React.createElement('div', { 
+              className: 'min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center' 
+            },
+              React.createElement('div', { className: 'text-white text-xl' }, 'Loading your skills...')
+            );
+          }
+
+          return React.createElement('div', { 
+            className: 'min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-8' 
+          },
+            React.createElement('div', { className: 'max-w-4xl mx-auto' },
+              React.createElement('div', { className: 'text-center mb-8' },
+                React.createElement('h1', { className: 'text-5xl font-bold text-white mb-2' }, 'Skill Mastery Tracker'),
+                React.createElement('p', { className: 'text-purple-200' }, 'Level up your skills, 20 hours at a time')
+              ),
+              React.createElement('div', { className: 'bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-8 shadow-2xl border border-white/20' },
+                React.createElement('h2', { className: 'text-2xl font-bold text-white mb-4' }, 'Add New Skill'),
+                React.createElement('div', { className: 'flex gap-3' },
+                  React.createElement('input', {
+                    type: 'text',
+                    value: newSkillName,
+                    onChange: (e) => setNewSkillName(e.target.value),
+                    onKeyPress: (e) => e.key === 'Enter' && addSkill(),
+                    placeholder: 'Enter skill name...',
+                    className: 'flex-1 px-4 py-3 rounded-lg bg-white/20 text-white placeholder-white/60 border border-white/30 focus:outline-none focus:ring-2 focus:ring-pink-400'
+                  }),
+                  React.createElement('button', {
+                    onClick: addSkill,
+                    className: 'px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all shadow-lg'
+                  }, 'Add Skill')
+                )
+              ),
+              React.createElement('div', { className: 'space-y-4' },
+                skills.length === 0 
+                  ? React.createElement('div', { className: 'bg-white/10 backdrop-blur-lg rounded-2xl p-12 text-center border border-white/20' },
+                      React.createElement('p', { className: 'text-white/70 text-lg' }, 'No skills yet. Add your first skill to start tracking!')
+                    )
+                  : skills.map(skill =>
+                      React.createElement('div', { 
+                        key: skill.id,
+                        className: 'bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20 hover:bg-white/15 transition-all' 
+                      },
+                        React.createElement('div', { className: 'flex items-start justify-between mb-4' },
+                          React.createElement('div', { className: 'flex-1' },
+                            React.createElement('h3', { className: 'text-2xl font-bold text-white mb-1' }, skill.name),
+                            React.createElement('div', { className: 'flex items-center gap-4 text-purple-200' },
+                              React.createElement('span', {}, skill.totalHours.toFixed(1) + ' hours'),
+                              React.createElement('span', { className: 'text-yellow-300 font-semibold' }, 'Level ' + skill.level)
+                            )
+                          ),
+                          React.createElement('button', {
+                            onClick: () => deleteSkill(skill.id),
+                            className: 'p-2 hover:bg-red-500/30 rounded-lg transition-all text-red-300'
+                          }, '🗑️')
+                        ),
+                        React.createElement('div', { className: 'mb-4' },
+                          React.createElement('div', { className: 'flex justify-between text-sm text-purple-200 mb-2' },
+                            React.createElement('span', {}, 'Progress to Level ' + (skill.level + 1)),
+                            React.createElement('span', {}, getHoursToNextLevel(skill.totalHours).toFixed(1) + ' hours remaining')
+                          ),
+                          React.createElement('div', { className: 'w-full h-4 bg-black/30 rounded-full overflow-hidden' },
+                            React.createElement('div', {
+                              className: 'h-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 transition-all duration-500 ease-out rounded-full',
+                              style: { width: getProgressPercentage(skill.totalHours) + '%' }
+                            })
+                          )
+                        ),
+                        React.createElement('div', { className: 'flex gap-3' },
+                          React.createElement('input', {
+                            type: 'number',
+                            step: '0.5',
+                            min: '0',
+                            value: updateTime[skill.id] || '',
+                            onChange: (e) => setUpdateTime({ ...updateTime, [skill.id]: e.target.value }),
+                            onKeyPress: (e) => e.key === 'Enter' && updateSkillTime(skill.id),
+                            placeholder: 'Hours to add...',
+                            className: 'flex-1 px-4 py-2 rounded-lg bg-white/20 text-white placeholder-white/60 border border-white/30 focus:outline-none focus:ring-2 focus:ring-purple-400'
+                          }),
+                          React.createElement('button', {
+                            onClick: () => updateSkillTime(skill.id),
+                            className: 'px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-lg'
+                          }, 'Update')
+                        )
+                      )
+                    )
+              )
+            )
+          );
+        }
+
+        ReactDOM.render(React.createElement(SkillTracker), document.getElementById('root'));
+    </script>
 </body>
 </html>
